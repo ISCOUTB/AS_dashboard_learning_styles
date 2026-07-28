@@ -26,7 +26,7 @@ if (!$DB->record_exists('block_instances', array('blockname' => 'learning_style'
 
 // Security: Check permissions and enrollment
 $is_own_results = ($USER->id == $userid);
-$can_view_reports = has_capability('block/learning_style:viewreports', $context);
+$can_view_reports = has_capability('block/learning_style:viewstudentdata', $context);
 
 // Basic access check: If not owner, not teacher, and not admin -> Kick out
 if (!$is_own_results && !$can_view_reports) {

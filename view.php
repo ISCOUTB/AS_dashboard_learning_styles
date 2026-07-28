@@ -34,7 +34,7 @@ if (!$DB->record_exists('block_instances', array('blockname' => 'learning_style'
 }
 
 // Redirect teachers/admins to admin page
-if (has_capability('block/learning_style:viewreports', $context)) {
+if (has_capability('block/learning_style:viewstudentdata', $context)) {
     $manage_url = new moodle_url('/blocks/learning_style/admin_view.php', array('cid' => $courseid));
     redirect($manage_url, get_string('teachers_redirect_message', 'block_learning_style'));
 }

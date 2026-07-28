@@ -1,4 +1,9 @@
 <?php
+$string['learning_style:viewstudentdata'] = 'View sensitive student data';
+$string['learning_style:deletestudentdata'] = 'Delete sensitive student data';
+$string['learning_style:take_test'] = 'Take the learning styles exploration';
+$string['sensitive_data'] = 'Sensitive data';
+$string['open_admin_panel'] = 'Open administration panel';
 $string['pluginname'] = 'Learning Styles Exploration';
 $string['management_title'] = 'Learning Styles Exploration Management';
 $string['course_overview'] = 'Course Overview';

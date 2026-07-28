@@ -23,21 +23,24 @@ $capabilities = array(
         'clonepermissionsfrom' => 'moodle/site:manageblocks'
     ),
 
-    'block/learning_style:viewreports' => array(
-        'captype' => 'read',
-        'contextlevel' => CONTEXT_COURSE,
-        'archetypes' => array(
-            'teacher' => CAP_ALLOW,
-            'editingteacher' => CAP_ALLOW,
-            'manager' => CAP_ALLOW
-        )
-    ),
-
     'block/learning_style:take_test' => array(
         'captype' => 'write', 
         'contextlevel' => CONTEXT_COURSE,
         'archetypes' => array(
             'student' => CAP_ALLOW
         )
+    ),
+
+    // Datos personales: no se asignan automáticamente a roles docentes.
+    'block/learning_style:viewstudentdata' => array(
+        'riskbitmask' => RISK_PERSONAL,
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_COURSE
+    ),
+
+    'block/learning_style:deletestudentdata' => array(
+        'riskbitmask' => RISK_DATALOSS | RISK_PERSONAL,
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_COURSE
     ),
 );

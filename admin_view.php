@@ -33,7 +33,7 @@ if (!$DB->record_exists('block_instances', array('blockname' => 'learning_style'
 }
 
 // Friendly redirect for unauthorized users
-if (!has_capability('block/learning_style:viewreports', $context)) {
+if (!has_capability('block/learning_style:viewstudentdata', $context)) {
     redirect(new moodle_url('/course/view.php', array('id' => $courseid)));
 }
 
@@ -48,13 +48,17 @@ $admin_url = new moodle_url('/blocks/learning_style/admin_view.php', array('cour
 $PAGE->set_url($admin_url);
 
 // Handle Delete Action
+if ($action === 'delete' && $userid && !has_capability('block/learning_style:deletestudentdata', $context)) {
+    redirect($admin_url);
+}
+
 if ($action === 'delete' && $userid && confirm_sesskey()) {
     $confirm = optional_param('confirm', 0, PARAM_INT);
     if ($confirm) {
         // Privacy check
         $targetuser = $DB->get_record('user', array('id' => $userid), '*', MUST_EXIST);
         if (!is_enrolled($context, $targetuser, 'block/learning_style:take_test', true)
-            || has_capability('block/learning_style:viewreports', $context, $userid)) {
+            || has_capability('block/learning_style:viewstudentdata', $context, $userid)) {
             redirect(new moodle_url('/course/view.php', array('id' => $courseid)));
         }
         
@@ -64,7 +68,7 @@ if ($action === 'delete' && $userid && confirm_sesskey()) {
 }
 
 $title = get_string('admin_title', 'block_learning_style');
-$PAGE->set_pagelayout('standard');
+$PAGE->set_pagelayout('incourse');
 $PAGE->set_title($title . " : " . $course->fullname);
 $PAGE->set_heading($title . " : " . $course->fullname);
 $PAGE->requires->css('/blocks/learning_style/styles.css');
@@ -78,7 +82,8 @@ $data = [
     'admin_url' => $admin_url->out(false),
     'export_url' => (new moodle_url('/blocks/learning_style/download_results.php', ['courseid' => $courseid, 'sesskey' => sesskey()]))->out(false),
     'course_url' => (new moodle_url('/course/view.php', ['id' => $courseid]))->out(false),
-    'search_term' => $search
+    'search_term' => $search,
+    'can_delete' => has_capability('block/learning_style:deletestudentdata', $context),
 ];
 
 $user = $DB->get_record('user', array('id' => $userid), 'firstname, lastname');
@@ -259,6 +264,7 @@ if ($participants) {
             'is_completed' => ($p->is_completed == 1),
             'completion_date' => userdate($p->updated_at, get_string('strftimedatetimeshort')),
             'view_url' => (new moodle_url('/blocks/learning_style/view_individual.php', ['courseid' => $courseid, 'userid' => $p->user]))->out(false),
+            'can_delete' => has_capability('block/learning_style:deletestudentdata', $context),
             'delete_url' => (new moodle_url('/blocks/learning_style/admin_view.php', ['courseid' => $courseid, 'action' => 'delete', 'userid' => $p->user, 'sesskey' => sesskey()]))->out(false)
         ];
         
