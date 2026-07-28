@@ -131,7 +131,7 @@ class block_learning_style extends block_base
      * Check if user can view dashboard
      */
     private function can_view_dashboard($context, $userid = null) {
-        return has_capability('block/learning_style:viewreports', $context, $userid);
+        return has_capability('block/learning_style:viewstudentdata', $context, $userid);
     }
 
     /**
@@ -251,70 +251,15 @@ class block_learning_style extends block_base
      * Generate content for teachers/admins
      */
     private function get_teacher_content($context) {
-        global $CFG, $COURSE, $DB, $OUTPUT;
+        global $COURSE, $OUTPUT;
 
-        // Header with learning style icon for teacher/admin view.
-        $icon = $this->get_learning_style_icon('4em', '', true);
-
-        // Assets for embedded dashboard.
-        $this->page->requires->css('/blocks/learning_style/dashboard/css/style.css');
-        $this->page->requires->js('/blocks/learning_style/dashboard/js/main.js');
-
-        // Render dashboard HTML fragment.
-        $embedded_file = $CFG->dirroot . '/blocks/learning_style/dashboard/embedded.php';
-        $dashboard_html = '';
-
-        if (file_exists($embedded_file)) {
-            ob_start();
-            $courseid = $COURSE->id;
-            include_once($embedded_file);
-            $dashboard_html = ob_get_clean();
-        } else {
-            $dashboard_html = '<p>' . get_string('dashboard_not_found', 'block_learning_style') . '</p>';
-        }
-
-        $template_data = [
-            'icon' => $icon,
-            'dashboard_html' => $dashboard_html,
-            'show_buttons' => false
-        ];
-
-        // Agregar botones al final (después del dashboard) para profesores/administradores 
-        $is_teacher = $this->can_view_dashboard($context);
-        if ($is_teacher) {
-            $template_data['show_buttons'] = true;
-            $template_data['admin_url'] = (new moodle_url('/blocks/learning_style/admin_view.php', array('courseid' => $COURSE->id)))->out();
-            
-            // Determinar si hay tests completados en este curso (solo estudiantes)
-            $student_users = get_enrolled_users($context, 'block/learning_style:take_test', 0, 'u.id');
-            $student_ids = array_keys($student_users);
-
-            // Defensive: exclude any teacher/manager-type user even if misconfigured.
-            $filtered_student_ids = array();
-            foreach ($student_ids as $candidateid) {
-                $candidateid = (int)$candidateid;
-                
-                if ($this->can_view_dashboard($context, $candidateid)) {
-                    continue;
-                }
-                $filtered_student_ids[] = $candidateid;
-            }
-            $student_ids = $filtered_student_ids;
-
-            $has_completed = false;
-            if (!empty($student_ids)) {
-                list($insql, $params) = $DB->get_in_or_equal($student_ids, SQL_PARAMS_NAMED, 'user');
-                $completed_count = $DB->count_records_sql("SELECT COUNT(*) FROM {learning_style} WHERE user $insql AND is_completed = 1", $params);
-                $has_completed = ($completed_count > 0);
-            }
-            
-            $template_data['show_download'] = $has_completed;
-            if ($has_completed) {
-                $template_data['download_url'] = (new moodle_url('/blocks/learning_style/download_results.php', array('courseid' => $COURSE->id, 'sesskey' => sesskey())))->out(false);
-            }
-        }
-
-        return $OUTPUT->render_from_template('block_learning_style/teacher_dashboard', $template_data);
+        return $OUTPUT->render_from_template('block_learning_style/admin_launcher', [
+            'icon_html' => $this->get_learning_style_icon('4em', '', true),
+            'security_label' => get_string('sensitive_data', 'block_learning_style'),
+            'title' => get_string('management_title', 'block_learning_style'),
+            'admin_url' => (new moodle_url('/blocks/learning_style/admin_view.php', ['courseid' => $COURSE->id]))->out(false),
+            'button_label' => get_string('open_admin_panel', 'block_learning_style'),
+        ]);
     }
 
     /**

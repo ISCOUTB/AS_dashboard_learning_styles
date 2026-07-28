@@ -13,9 +13,7 @@ require_login($course);
 $context = context_course::instance($courseid);
 
 // Check permissions
-$canview = has_capability('block/learning_style:viewreports', $context)
-    || has_capability('moodle/course:viewhiddensections', $context)
-    || is_siteadmin();
+$canview = has_capability('block/learning_style:viewstudentdata', $context);
 
 if (!$canview) {
     $redirecturl = new moodle_url('/course/view.php', array('id' => $courseid));

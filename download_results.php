@@ -34,7 +34,7 @@ $context = context_course::instance($course->id);
 
 // Requerir inicio de sesión
 require_login($course, false);
-require_capability('block/learning_style:viewreports', $context);
+require_capability('block/learning_style:viewstudentdata', $context);
 
 // Obtener solo estudiantes (usuarios que pueden tomar el test)
 $enrolled_users = get_enrolled_users($context, 'block/learning_style:take_test', 0, 'u.id');
@@ -45,7 +45,7 @@ $student_ids = array();
 foreach ($enrolled_ids as $candidateid) {
     $candidateid = (int)$candidateid;
     
-    if (has_capability('block/learning_style:viewreports', $context, $candidateid)) {
+    if (has_capability('block/learning_style:viewstudentdata', $context, $candidateid)) {
         continue;
     }
     $student_ids[] = $candidateid;

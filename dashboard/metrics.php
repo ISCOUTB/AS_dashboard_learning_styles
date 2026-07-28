@@ -16,9 +16,7 @@ require_sesskey();
 
 $context = context_course::instance($courseid);
 
-$canview = has_capability('block/learning_style:viewreports', $context)
-    || has_capability('moodle/course:viewhiddensections', $context)
-    || is_siteadmin();
+$canview = has_capability('block/learning_style:viewstudentdata', $context);
 
 if (!$canview) {
     http_response_code(403);

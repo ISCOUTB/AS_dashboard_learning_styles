@@ -199,9 +199,11 @@
                                     <a href="{{view_url}}" class="btn btn-sm btn-info mr-2" title="{{#str}}view_details, block_learning_style{{/str}}">
                                         <i class="fa fa-eye"></i> {{#str}}view_details, block_learning_style{{/str}}
                                     </a>
-                                    <a href="{{delete_url}}" class="btn btn-sm btn-danger" title="{{#str}}delete{{/str}}">
-                                        <i class="fa fa-trash"></i> {{#str}}delete{{/str}}
-                                    </a>
+                                    {{#can_delete}}
+                                        <a href="{{delete_url}}" class="btn btn-sm btn-danger" title="{{#str}}delete{{/str}}">
+                                            <i class="fa fa-trash"></i> {{#str}}delete{{/str}}
+                                        </a>
+                                    {{/can_delete}}
                                 </td>
                             </tr>
                             {{/list}}
